@@ -34,7 +34,7 @@ function loadSignatureLevels(serializationType) {
             $.each(data, function(idx) {
                 $('#selectSignatureLevel').append($('<option>', {
                     value: data[idx],
-                    text: data[idx].replace(/_/g, "-")
+                    text: data[idx]
                 }));
                 loadBase64UrlEncodedEtsiU($('#selectSignatureLevel').val());
             });

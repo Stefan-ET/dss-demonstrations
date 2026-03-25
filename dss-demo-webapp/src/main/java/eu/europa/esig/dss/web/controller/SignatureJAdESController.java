@@ -16,6 +16,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.web.WebAppUtils;
 import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.DataToSignParams;
 import eu.europa.esig.dss.web.model.GetDataToSignResponse;
 import eu.europa.esig.dss.web.model.SignDocumentResponse;
@@ -52,7 +53,7 @@ public class SignatureJAdESController extends AbstractSignatureController {
 	private static final Logger LOG = LoggerFactory.getLogger(SignatureJAdESController.class);
 
 	private static final String SIGNATURE_JAdES = "signature-jades";
-	
+
 	private static final String[] ALLOWED_FIELDS = { "documentsToSign", "jwsSerializationType", "signaturePackaging",
 			"signatureLevel", "sigDMechanism", "base64UrlEncodedPayload", "base64UrlEncodedEtsiU", "digestAlgorithm",
 			"signWithExpiredCertificate", "addContentTimestamp" };
@@ -61,12 +62,12 @@ public class SignatureJAdESController extends AbstractSignatureController {
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.registerCustomEditor(JWSSerializationType.class, new EnumPropertyEditor(JWSSerializationType.class));
 		webDataBinder.registerCustomEditor(SigDMechanism.class, new EnumPropertyEditor(SigDMechanism.class));
-		webDataBinder.registerCustomEditor(SignatureLevel.class, new EnumPropertyEditor(SignatureLevel.class));
+		webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 		webDataBinder.registerCustomEditor(SignaturePackaging.class, new EnumPropertyEditor(SignaturePackaging.class));
 		webDataBinder.registerCustomEditor(DigestAlgorithm.class, new EnumPropertyEditor(DigestAlgorithm.class));
 		webDataBinder.registerCustomEditor(EncryptionAlgorithm.class, new EnumPropertyEditor(EncryptionAlgorithm.class));
 	}
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);

@@ -88,7 +88,7 @@ function updateSignatureLevel(signatureForm) {
             $.each(data, function(idx) {
                 $('#selectSignatureLevel').append($('<option>', {
                     value: data[idx],
-                    text: data[idx].replace(/_/g, "-")
+                    text: data[idx]
                 }));
             });
         }

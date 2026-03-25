@@ -17,6 +17,7 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.web.WebAppUtils;
 import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.exception.SignatureOperationException;
 import eu.europa.esig.dss.web.model.CounterSignatureForm;
 import eu.europa.esig.dss.web.model.CounterSignatureHelperResponse;
@@ -60,8 +61,8 @@ public class CounterSignatureController extends AbstractSignatureController {
 	private static final Logger LOG = LoggerFactory.getLogger(CounterSignatureController.class);
 
 	private static final String COUNTER_SIGN = "counter-signature";
-	
-	private static final String[] ALLOWED_FIELDS = { "counterSignatureForm", "documentToCounterSign", "signatureIdToCounterSign", 
+
+	private static final String[] ALLOWED_FIELDS = { "counterSignatureForm", "documentToCounterSign", "signatureIdToCounterSign",
 			"signatureForm", "signatureLevel", "digestAlgorithm", "signWithExpiredCertificate" };
 
 	@Autowired
@@ -73,11 +74,11 @@ public class CounterSignatureController extends AbstractSignatureController {
 	@InitBinder
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.registerCustomEditor(SignatureForm.class, new EnumPropertyEditor(SignatureForm.class));
-		webDataBinder.registerCustomEditor(SignatureLevel.class, new EnumPropertyEditor(SignatureLevel.class));
+		webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 		webDataBinder.registerCustomEditor(DigestAlgorithm.class, new EnumPropertyEditor(DigestAlgorithm.class));
 		webDataBinder.registerCustomEditor(EncryptionAlgorithm.class, new EnumPropertyEditor(EncryptionAlgorithm.class));
 	}
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);
@@ -173,12 +174,12 @@ public class CounterSignatureController extends AbstractSignatureController {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Extraction of signatures...");
 		}
-		
+
 		try {
 			DSSDocument toCounterSignDSSDocument = WebAppUtils.toDSSDocument(documentToCounterSign);
 			SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(toCounterSignDSSDocument);
 			validator.setCertificateVerifier(certificateVerifier);
-			
+
 			List<AdvancedSignature> signatures = validator.getSignatures();
 			if (Utils.isCollectionNotEmpty(signatures)) {
 				CounterSignatureHelperResponse counterSignatureResponse = new CounterSignatureHelperResponse();
@@ -186,17 +187,17 @@ public class CounterSignatureController extends AbstractSignatureController {
 				SignatureForm signatureForm = getSignatureForm(signatures);
 				counterSignatureResponse.setSignatureForm(signatureForm);
 				counterSignatureResponse.setSignatureLevels(getSignatureLevels(signatureForm, process));
-				
+
 				return counterSignatureResponse;
 			}
-			
+
 			throw new DSSException("The uploaded file does not contain signatures.");
-		
+
 		} catch (Exception e) {
 			throw new SignatureOperationException(e.getMessage(), e);
 		}
 	}
-	
+
 	private List<String> getSignatureIds(List<AdvancedSignature> signatures) {
 		List<String> signatureIds = new ArrayList<>();
 		for (AdvancedSignature signature : signatures) {
@@ -206,10 +207,10 @@ public class CounterSignatureController extends AbstractSignatureController {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("The following signatures found : " + signatureIds);
 		}
-		
+
 		return signatureIds;
 	}
-	
+
 	private void extractIdsRecursively(AdvancedSignature signature, List<String> signatureIds) {
 		String id = Utils.isStringNotEmpty(signature.getDAIdentifier()) ? signature.getDAIdentifier() : signature.getId();
 		signatureIds.add(id);
@@ -217,12 +218,12 @@ public class CounterSignatureController extends AbstractSignatureController {
 			extractIdsRecursively(counterSignature, signatureIds);
 		}
 	}
-	
+
 	private SignatureForm getSignatureForm(List<AdvancedSignature> advancedSignatures) {
 		AdvancedSignature advancedSignature = advancedSignatures.iterator().next();
 		return advancedSignature.getSignatureForm();
 	}
-	
+
 	private List<SignatureLevel> getSignatureLevels(SignatureForm signatureForm, ProcessEnum process) {
 		return dataController.getAllowedLevelsByForm(signatureForm, process);
 	}

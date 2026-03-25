@@ -16,6 +16,7 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.web.WebAppUtils;
 import eu.europa.esig.dss.web.editor.ASiCContainerTypePropertyEditor;
 import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.DataToSignParams;
 import eu.europa.esig.dss.web.model.GetDataToSignResponse;
 import eu.europa.esig.dss.web.model.SignDocumentResponse;
@@ -52,7 +53,7 @@ public class SignatureController extends AbstractSignatureController {
 	private static final Logger LOG = LoggerFactory.getLogger(SignatureController.class);
 
 	private static final String SIGNATURE_PARAMETERS = "signature";
-	
+
 	private static final String[] ALLOWED_FIELDS = { "documentToSign", "containerType", "signatureForm", "signaturePackaging",
 			"signatureLevel", "digestAlgorithm", "signWithExpiredCertificate", "addContentTimestamp" };
 
@@ -61,11 +62,11 @@ public class SignatureController extends AbstractSignatureController {
 		webDataBinder.registerCustomEditor(SignatureForm.class, new EnumPropertyEditor(SignatureForm.class));
 		webDataBinder.registerCustomEditor(ASiCContainerType.class, new ASiCContainerTypePropertyEditor());
 		webDataBinder.registerCustomEditor(SignaturePackaging.class, new EnumPropertyEditor(SignaturePackaging.class));
-		webDataBinder.registerCustomEditor(SignatureLevel.class, new EnumPropertyEditor(SignatureLevel.class));
+		webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 		webDataBinder.registerCustomEditor(DigestAlgorithm.class, new EnumPropertyEditor(DigestAlgorithm.class));
 		webDataBinder.registerCustomEditor(EncryptionAlgorithm.class, new EnumPropertyEditor(EncryptionAlgorithm.class));
 	}
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);

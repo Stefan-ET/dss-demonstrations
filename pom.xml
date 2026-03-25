@@ -57,7 +57,7 @@
 		<hsqldb.version>2.7.4</hsqldb.version>
 		<fop-core.version>2.11</fop-core.version>
 		<nexu.version>1.22</nexu.version>
-		
+
 		<junit.version>6.0.3</junit.version>
 	</properties>
 
@@ -216,6 +216,15 @@
 
 	<dependencyManagement>
 		<dependencies>
+            <!-- JUnit BOM needs to be imported before the BOM of DSS because of a version conflict (Spring Boot 4 requires JUnit 6 but DSS uses JUnit 5) -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-demo-webapp</artifactId>
@@ -249,7 +258,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
 				<type>pom</type>
-				<version>3.5.11</version>
+				<version>4.0.4</version>
 				<scope>import</scope>
 			</dependency>
 
@@ -269,19 +278,13 @@
 				<version>${fop-core.version}</version>
 			</dependency>
 
-			<!-- Temporary bump while spring-boot 3.5.x uses a commons-lang3 version 3.17.0 with a vulnerability -->
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>3.20.0</version>
-			</dependency>
-			<!-- Temporary bump while spring-boot 3.5.x uses a log4j-api version 2.24.3 with a vulnerability -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>2.25.3</version>
-			</dependency>
-			
+            <!-- Spring Boot 4.0.X uses version 3.19.0, which is lower than the version from DSS -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.20.0</version>
+            </dependency>
+
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -305,16 +308,16 @@
 			<dependency>
 			    <groupId>org.apache.cxf</groupId>
 			    <artifactId>cxf-rt-rs-client</artifactId>
-			    <version>${cxf.version}</version> 
+			    <version>${cxf.version}</version>
 			    <scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 			    <groupId>org.apache.cxf</groupId>
 			    <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
 			    <version>${cxf.version}</version>
 			</dependency>
-			
+
 			<dependency>
 	            <groupId>org.webjars</groupId>
 	            <artifactId>swagger-ui</artifactId>
@@ -342,7 +345,7 @@
 				<artifactId>hsqldb</artifactId>
 				<version>${hsqldb.version}</version>
 			</dependency>
-				
+
 			<!-- Logger -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -382,14 +385,6 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${logback-classic.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>${junit.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

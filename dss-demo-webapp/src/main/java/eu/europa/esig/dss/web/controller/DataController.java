@@ -5,6 +5,7 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.ProcessEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -27,10 +28,11 @@ public class DataController {
 
 	@Value("${dss.server.signing.keystore.self.signed}")
 	private boolean serverSignSelfSigned;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);
+        webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 	}
 
 	@RequestMapping(value = "/packagingsByForm", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -158,5 +160,5 @@ public class DataController {
 		}
 		return levels;
 	}
-	
+
 }
