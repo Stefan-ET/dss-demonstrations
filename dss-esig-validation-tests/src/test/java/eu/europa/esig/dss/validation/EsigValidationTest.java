@@ -98,7 +98,8 @@ public class EsigValidationTest {
         sb.append("AdES Errors,");
         sb.append("AdES Warnings,");
         sb.append("Qualifications Errors,");
-        sb.append("Qualifications Warnings");
+        sb.append("Qualifications Warnings,");
+        sb.append("Error description");
         sb.append('\n');
     }
 
@@ -297,26 +298,39 @@ public class EsigValidationTest {
     @ParameterizedTest(name = "Validation {index} : {0}")
     @MethodSource("data")
     public void test(DSSDocument document, String expectedResult, CertificateVerifier certificateVerifier) {
-        SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(document);
-        validator.setCertificateVerifier(certificateVerifier);
+        String obtainedResult;
+        SimpleReport simpleReport = null;
+        String errorMessage = null;
+        try {
+            SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(document);
+            validator.setCertificateVerifier(certificateVerifier);
 
-        Reports reports = validator.validateDocument(validationPolicy);
-        // reports.print();
+            Reports reports = validator.validateDocument(validationPolicy);
+            // reports.print();
 
-        SimpleReport simpleReport = reports.getSimpleReport();
-        String obtainedResult = simpleReport.getSignatureQualification(simpleReport.getFirstSignatureId()).getReadable();
+            simpleReport = reports.getSimpleReport();
+            obtainedResult = simpleReport.getSignatureQualification(simpleReport.getFirstSignatureId()).getReadable();
+        } catch (Exception e) {
+            obtainedResult = e.getClass().getName();
+            errorMessage = e.getMessage();
+        }
 
         sb.append(document.getName()).append(",");
         sb.append(expectedResult).append(",");
         sb.append(obtainedResult).append(",");
         sb.append(expectedResult.equals(obtainedResult)).append(",");
-        sb.append(simpleReport.getIndication(simpleReport.getFirstSignatureId())).append(",");
-        sb.append((simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) != null ?
-                simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) : "-")).append(",");
-        sb.append(toString(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getQualificationErrors(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getQualificationWarnings(simpleReport.getFirstSignatureId())));
+        if (simpleReport != null) {
+            sb.append(simpleReport.getIndication(simpleReport.getFirstSignatureId())).append(",");
+            sb.append((simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) != null ?
+                    simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) : "-")).append(",");
+            sb.append(toString(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getQualificationErrors(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getQualificationWarnings(simpleReport.getFirstSignatureId()))).append(",-");
+        } else {
+            sb.append("-,-,-,-,-,-,");
+            sb.append(errorMessage == null ? "-" : errorMessage.replace(",", ";"));
+        }
         sb.append('\n');
 
         // TODO: add equivalence map between eSig validation test cases and DSS results
