@@ -638,8 +638,10 @@ public class DSSBeanConfig {
 		LOTLSource lotlSource = new LOTLSource();
 		lotlSource.setUrl(lotlUrl);
 		lotlSource.setCertificateSource(ojContentKeyStore());
-		lotlSource.setSigningCertificatesAnnouncementPredicate(new OfficialJournalSchemeInformationURI(currentOjUrl));
 		lotlSource.setPivotSupport(true);
+		if (Utils.isStringNotEmpty(currentOjUrl)) {
+			lotlSource.setSigningCertificatesAnnouncementPredicate(new OfficialJournalSchemeInformationURI(currentOjUrl));
+		}
 		if (useSunsetDate) {
 			lotlSource.setTrustAnchorValidityPredicate(new GrantedOrRecognizedAtNationalLevelTrustAnchorPeriodPredicate());
 		}
