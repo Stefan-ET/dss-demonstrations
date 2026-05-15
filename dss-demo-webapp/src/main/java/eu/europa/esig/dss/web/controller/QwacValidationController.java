@@ -57,7 +57,7 @@ public class QwacValidationController extends AbstractValidationController {
 			"includeUserFriendlyIdentifiers" };
 
 	@Autowired
-	protected CommonsDataLoader trustAllDataLoader;
+	protected CommonsDataLoader trustAllNoRedirectsDataLoader;
 
 	@Autowired
 	protected Resource defaultQwacPolicy;
@@ -100,7 +100,7 @@ public class QwacValidationController extends AbstractValidationController {
 		}
 
 		qwacValidator.setCertificateVerifier(certificateVerifier);
-		qwacValidator.setDataLoader(trustAllDataLoader);
+		qwacValidator.setDataLoader(trustAllNoRedirectsDataLoader);
 		qwacValidator.setValidationTime(getValidationTime(qwacValidationForm.getValidationTime(), qwacValidationForm.getTimezoneDifference()));
 		qwacValidator.setTokenExtractionStrategy(TokenExtractionStrategy.fromParameters(qwacValidationForm.isIncludeCertificateTokens(), false,
 				qwacValidationForm.isIncludeRevocationTokens(), false));
@@ -111,7 +111,7 @@ public class QwacValidationController extends AbstractValidationController {
 
 		byte[] tlsBindingSignature = getTlsBindingSignatureBytes(qwacValidationForm);
 		if (tlsBindingSignature != null) {
-			qwacValidator.setDataLoader(new ProxiedMemoryDataLoader(trustAllDataLoader, url, tlsCertificate, tlsBindingSignature));
+			qwacValidator.setDataLoader(new ProxiedMemoryDataLoader(trustAllNoRedirectsDataLoader, url, tlsCertificate, tlsBindingSignature));
 		}
 
 		CertificateReports reports = validate(qwacValidator, qwacValidationForm);

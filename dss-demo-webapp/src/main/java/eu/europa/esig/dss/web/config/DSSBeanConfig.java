@@ -245,6 +245,14 @@ public class DSSBeanConfig {
     }
 
 	@Bean
+	public CommonsDataLoader trustAllNoRedirectsDataLoader() {
+		CommonsDataLoader trustAllDataLoader = configureCommonsDataLoader(new CommonsDataLoader());
+		trustAllDataLoader.setTrustStrategy(TrustAllStrategy.INSTANCE);
+		trustAllDataLoader.setRedirectsEnabled(false);
+		return trustAllDataLoader;
+	}
+
+	@Bean
 	public OCSPDataLoader ocspDataLoader() {
 		return configureCommonsDataLoader(new OCSPDataLoader());
 	}
