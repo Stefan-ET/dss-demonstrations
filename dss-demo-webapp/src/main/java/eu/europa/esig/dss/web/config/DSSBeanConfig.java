@@ -4,6 +4,7 @@ import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
+import eu.europa.esig.dss.eaa.revocation.source.OnlineEAARevocationSource;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
@@ -24,6 +25,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.service.x509.aia.JdbcCacheAIASource;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.spi.client.http.IgnoreDataLoader;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -46,6 +48,7 @@ import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.ws.cert.validation.common.RemoteCertificateValidationService;
+import eu.europa.esig.dss.ws.eaa.validation.common.RemoteEAAValidationService;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnection;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnectionImpl;
 import eu.europa.esig.dss.ws.signature.common.RemoteDocumentSignatureServiceImpl;
@@ -583,6 +586,19 @@ public class DSSBeanConfig {
 		RemoteTimestampService timestampService = new RemoteTimestampService();
 		timestampService.setTSPSource(tspSource);
 		return timestampService;
+	}
+
+	@Bean
+	public RemoteEAAValidationService eaaValidationService() throws IOException {
+		RemoteEAAValidationService eaaValidationService = new RemoteEAAValidationService();
+		eaaValidationService.setVerifier(certificateVerifier());
+		eaaValidationService.setEAARevocationSource(eaaRevocationSource());
+		return eaaValidationService;
+	}
+
+	@Bean
+	public EAARevocationSource eaaRevocationSource() {
+		return new OnlineEAARevocationSource(fileCacheDataLoader());
 	}
 
 	@Bean
