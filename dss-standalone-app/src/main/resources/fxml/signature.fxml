@@ -47,6 +47,7 @@
         <RadioButton fx:id="cadesRadio" mnemonicParsing="false" text="CAdES" toggleGroup="$toogleSigFormat"/>
         <RadioButton fx:id="padesRadio" mnemonicParsing="false" text="PAdES" toggleGroup="$toogleSigFormat"/>
         <RadioButton fx:id="jadesRadio" mnemonicParsing="false" text="JAdES" toggleGroup="$toogleSigFormat"/>
+        <RadioButton fx:id="cbadesRadio" mnemonicParsing="false" text="CB-AdES" toggleGroup="$toogleSigFormat"/>
     </HBox>
 
     <HBox fx:id="hSignaturePackaging" styleClass="hbox-style">

@@ -3,6 +3,7 @@ eu.europa.esig.dss.xades.validation.XMLDocumentValidatorFactory
 eu.europa.esig.dss.cades.validation.CMSDocumentValidatorFactory
 eu.europa.esig.dss.pades.validation.PDFDocumentValidatorFactory
 eu.europa.esig.dss.jades.validation.JAdESDocumentValidatorFactory
+eu.europa.esig.dss.cbades.validation.COSEDocumentValidatorFactory
 eu.europa.esig.dss.asic.xades.validation.ASiCContainerWithXAdESValidatorFactory
 eu.europa.esig.dss.asic.cades.validation.ASiCContainerWithCAdESValidatorFactory
 eu.europa.esig.dss.evidencerecord.xml.validation.XMLEvidenceRecordValidatorFactory

@@ -107,6 +107,9 @@ public class SignatureController extends AbstractController {
 	private RadioButton jadesRadio;
 
 	@FXML
+	private RadioButton cbadesRadio;
+
+	@FXML
 	private HBox hSignaturePackaging;
 
 	@FXML
@@ -232,6 +235,7 @@ public class SignatureController extends AbstractController {
 		xadesRadio.setUserData(SignatureForm.XAdES);
 		padesRadio.setUserData(SignatureForm.PAdES);
 		jadesRadio.setUserData(SignatureForm.JAdES);
+		cbadesRadio.setUserData(SignatureForm.CBAdES);
 		toogleSigFormat.selectedToggleProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -424,12 +428,12 @@ public class SignatureController extends AbstractController {
 	private void updateSignatureFormAndPackaging() {
 		if (model.getAsicContainerType() != null) {
 			activateRadioButtons(xadesRadio, cadesRadio);
-			disableRadioButtons(padesRadio, jadesRadio);
+			disableRadioButtons(padesRadio, jadesRadio, cbadesRadio);
 			disableRadioButtons(envelopingRadio, envelopedRadio, detachedRadio, internallyDetachedRadio);
 			disableRadioButtons(tlSigning, xmlManifest);
 
 		} else if (Utils.collectionSize(model.getFilesToSign()) > 1) {
-			activateRadioButtons(xadesRadio, jadesRadio);
+			activateRadioButtons(xadesRadio, jadesRadio, cbadesRadio);
 			disableRadioButtons(cadesRadio, padesRadio);
 			disableRadioButtons(tlSigning, xmlManifest);
 			if (model.getSignatureForm() != null) {
@@ -440,6 +444,7 @@ public class SignatureController extends AbstractController {
 						break;
 
 					case JAdES:
+					case CBAdES:
 						activateRadioButtons(detachedRadio);
 						disableRadioButtons(envelopedRadio, envelopingRadio, internallyDetachedRadio);
 						break;
@@ -450,7 +455,7 @@ public class SignatureController extends AbstractController {
 			}
 
 		} else {
-			activateRadioButtons(xadesRadio, cadesRadio, padesRadio, jadesRadio);
+			activateRadioButtons(xadesRadio, cadesRadio, padesRadio, jadesRadio, cbadesRadio);
 			if (model.getSignatureForm() != null) {
 				switch (model.getSignatureForm()) {
 					case XAdES:
@@ -473,6 +478,7 @@ public class SignatureController extends AbstractController {
 
 					case CAdES:
 					case JAdES:
+					case CBAdES:
 						activateRadioButtons(envelopingRadio, detachedRadio);
 						disableRadioButtons(envelopedRadio, internallyDetachedRadio);
 						disableRadioButtons(tlSigning, xmlManifest);
@@ -537,6 +543,12 @@ public class SignatureController extends AbstractController {
 				case JAdES:
 					signatureLevels = Arrays.asList(SignatureLevel.JAdES_BASELINE_B, SignatureLevel.JAdES_BASELINE_T,
 							SignatureLevel.JAdES_BASELINE_LT, SignatureLevel.JAdES_BASELINE_LTA);
+					digestAlgorithms = Arrays.asList(DigestAlgorithm.SHA256, DigestAlgorithm.SHA384, DigestAlgorithm.SHA512);
+					break;
+
+				case CBAdES:
+					signatureLevels = Arrays.asList(SignatureLevel.CB_AdES_BASELINE_B, SignatureLevel.CB_AdES_BASELINE_T,
+							SignatureLevel.CB_AdES_BASELINE_LT, SignatureLevel.CB_AdES_BASELINE_LTA);
 					digestAlgorithms = Arrays.asList(DigestAlgorithm.SHA256, DigestAlgorithm.SHA384, DigestAlgorithm.SHA512);
 					break;
 

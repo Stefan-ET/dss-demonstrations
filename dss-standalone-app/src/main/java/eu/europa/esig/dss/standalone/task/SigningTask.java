@@ -151,6 +151,9 @@ public class SigningTask extends Task<DSSDocument> {
 			parameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION); // allow extension
 			parameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH); // to be used by default
 		}
+		if (SignatureForm.CBAdES.equals(model.getSignatureForm())) {
+			parameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH); // to be used by default
+		}
 
 		return parameters;
 	}
