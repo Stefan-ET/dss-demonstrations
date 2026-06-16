@@ -4,6 +4,7 @@ import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.eaa.revocation.source.OnlineEAARevocationSource;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSException;
@@ -469,6 +470,13 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
+	public CBAdESService cbadesService() {
+		CBAdESService service = new CBAdESService(certificateVerifier());
+		service.setTspSource(tspSource);
+		return service;
+	}
+
+	@Bean
 	public ASiCWithCAdESService asicWithCadesService() {
 		ASiCWithCAdESService service = new ASiCWithCAdESService(certificateVerifier());
 		service.setTspSource(tspSource);
@@ -491,6 +499,7 @@ public class DSSBeanConfig {
 		service.setXadesService(xadesService());
 		service.setPadesService(padesService());
 		service.setJadesService(jadesService());
+		service.setCbadesService(cbadesService());
 		return service;
 	}
 
@@ -501,6 +510,7 @@ public class DSSBeanConfig {
 		service.setAsicWithXAdESService(asicWithXadesService());
 		service.setXadesService(xadesService());
 		service.setJadesService(jadesService());
+		service.setCbadesService(cbadesService());
 		return service;
 	}
 

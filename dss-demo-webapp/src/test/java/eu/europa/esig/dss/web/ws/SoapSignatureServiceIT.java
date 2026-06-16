@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.web.ws;
 
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
@@ -839,6 +840,42 @@ public class SoapSignatureServiceIT extends AbstractIT {
 			String documentContent = new String(signedDocument.getBytes());
 			assertTrue(documentContent.contains("<h:td>Hello</h:td>"));
 			assertTrue(documentContent.contains("<h:td>World</h:td>"));
+		}
+	}
+
+	@Test
+	void testSignCBAdES() throws Exception {
+		try (Pkcs12SignatureToken token = new Pkcs12SignatureToken(new FileInputStream("src/test/resources/user_a_rsa.p12"),
+				new PasswordProtection("password".toCharArray()))) {
+
+			List<DSSPrivateKeyEntry> keys = token.getKeys();
+			DSSPrivateKeyEntry dssPrivateKeyEntry = keys.get(0);
+
+			RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+			parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+			parameters.setSigningCertificate(new RemoteCertificate(dssPrivateKeyEntry.getCertificate().getCertificate().getEncoded()));
+			parameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+			parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+			parameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+
+			RemoteBLevelParameters bLevelParameters = new RemoteBLevelParameters();
+			bLevelParameters.setClaimedSignerRoles(Arrays.asList("Manager", "Administrator"));
+			parameters.setBLevelParams(bLevelParameters);
+
+			DSSDocument fileToSign = new InMemoryDocument("HelloWorld".getBytes());
+			RemoteDocument toSignDocument = new RemoteDocument(Utils.toByteArray(fileToSign.openStream()), fileToSign.getName());
+			DataToSignOneDocumentDTO dataToSignOneDocumentDTO = new DataToSignOneDocumentDTO(toSignDocument, parameters);
+			ToBeSignedDTO dataToSign = soapClient.getDataToSign(dataToSignOneDocumentDTO);
+			assertNotNull(dataToSign);
+
+			SignatureValue signatureValue = token.sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, dssPrivateKeyEntry);
+			SignOneDocumentDTO signOneDocumentDTO = new SignOneDocumentDTO(toSignDocument, parameters,
+					new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+			RemoteDocument signedDocument = soapClient.signDocument(signOneDocumentDTO);
+
+			assertNotNull(signedDocument);
+			InMemoryDocument iMD = new InMemoryDocument(signedDocument.getBytes());
+			assertNotNull(iMD);
 		}
 	}
 
