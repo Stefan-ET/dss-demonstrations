@@ -39,6 +39,9 @@ public class ValidationForm {
 
 	@AssertMultipartFile
 	private List<MultipartFile> evidenceRecordFiles;
+
+	@AssertMultipartFile
+	private MultipartFile externallySuppliedData;
 	
 	private boolean includeCertificateTokens;
 	
@@ -136,6 +139,14 @@ public class ValidationForm {
 
 	public void setAdjunctCertificates(List<MultipartFile> adjunctCertificates) {
 		this.adjunctCertificates = adjunctCertificates;
+	}
+
+	public MultipartFile getExternallySuppliedData() {
+		return externallySuppliedData;
+	}
+
+	public void setExternallySuppliedData(MultipartFile externallySuppliedData) {
+		this.externallySuppliedData = externallySuppliedData;
 	}
 	
 	public boolean isIncludeCertificateTokens() {

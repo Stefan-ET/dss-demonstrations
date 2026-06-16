@@ -156,7 +156,7 @@ public class DigestController extends AbstractSignatureController {
 
 	@ModelAttribute("signatureForms")
 	public SignatureForm[] getSignatureForms() {
-		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.JAdES };
+		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.JAdES, SignatureForm.CBAdES };
 	}
 
 	@ModelAttribute("digestAlgos")

@@ -60,6 +60,7 @@ function checkContentTstPossible(signatureForm) {
      switch(signatureForm) {
           case "XAdES":
           case "JAdES":
+          case "CBAdES":
             disableContentTstField(true);
             break;
           default:

@@ -9,6 +9,7 @@ function updateSigDMechanism(sigPackaging) {
 	if ('DETACHED' == sigPackaging) {
 		$('input[name="sigDMechanism"]:radio').filter('[value="OBJECT_ID_BY_URI"]').attr("disabled", false);
 		$('input[name="sigDMechanism"]:radio').filter('[value="OBJECT_ID_BY_URI_HASH"]').attr("disabled", false);
+		$('input[name="sigDMechanism"]:radio').filter('[value="NO_SIG_D"]').attr("disabled", false);
 	}
 }
 

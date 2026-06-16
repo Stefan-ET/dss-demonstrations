@@ -166,7 +166,7 @@ public class SignatureController extends AbstractSignatureController {
 
 	@ModelAttribute("signatureForms")
 	public SignatureForm[] getSignatureForms() {
-		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.PAdES, SignatureForm.JAdES};
+		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.PAdES, SignatureForm.JAdES, SignatureForm.CBAdES};
 	}
 
 	@ModelAttribute("signaturePackagings")

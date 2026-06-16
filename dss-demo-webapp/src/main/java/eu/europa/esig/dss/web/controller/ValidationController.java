@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.web.controller;
 
+import eu.europa.esig.dss.cbades.validation.COSEDocumentValidator;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
@@ -79,8 +80,8 @@ public class ValidationController extends AbstractValidationController {
 
 	private static final String[] ALLOWED_FIELDS = { "signedFile", "originalFiles[*].*", "digestToSend", "validationTime",
 			"validationLevel", "timezoneDifference", "defaultPolicy", "policyFile", "cryptographicSuite", "signingCertificate",
-			"adjunctCertificates", "evidenceRecordFiles", "includeCertificateTokens", "includeTimestampTokens", "includeRevocationTokens",
-			"includeUserFriendlyIdentifiers", "includeSemantics" };
+			"adjunctCertificates", "evidenceRecordFiles", "externallySuppliedData", "includeCertificateTokens", "includeTimestampTokens",
+			"includeRevocationTokens", "includeUserFriendlyIdentifiers", "includeSemantics" };
 
 	@Autowired
 	private FOPService fopService;
@@ -143,6 +144,7 @@ public class ValidationController extends AbstractValidationController {
 		setSigningCertificate(documentValidator, validationForm);
 		setDetachedContents(documentValidator, validationForm);
 		setDetachedEvidenceRecords(documentValidator, validationForm);
+		setExternallySuppliedData(documentValidator, validationForm);
 
 		Locale locale = request.getLocale();
 		LOG.trace("Requested locale : {}", locale);
@@ -178,6 +180,16 @@ public class ValidationController extends AbstractValidationController {
 		List<DSSDocument> evidenceRecordFiles = WebAppUtils.toDSSDocuments(validationForm.getEvidenceRecordFiles());
 		if (Utils.isCollectionNotEmpty(evidenceRecordFiles)) {
 			documentValidator.setDetachedEvidenceRecordDocuments(evidenceRecordFiles);
+		}
+	}
+
+	private void setExternallySuppliedData(SignedDocumentValidator documentValidator, ValidationForm validationForm) {
+		if (validationForm.getExternallySuppliedData() != null && !validationForm.getExternallySuppliedData().isEmpty()) {
+			if (documentValidator instanceof COSEDocumentValidator coseDocumentValidator) {
+                coseDocumentValidator.setExternallySuppliedData(WebAppUtils.toDSSDocument(validationForm.getExternallySuppliedData()));
+			} else {
+				LOG.warn("ExternallySuppliedData is not null, but the provided signature is not COSE. The attribute is ignored.");
+			}
 		}
 	}
 

@@ -11,6 +11,10 @@ import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESCounterSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESTimestampParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESCounterSignatureParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESTimestampParameters;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
@@ -52,6 +56,7 @@ import eu.europa.esig.dss.web.model.AbstractSignatureForm;
 import eu.europa.esig.dss.web.model.ContainerDocumentForm;
 import eu.europa.esig.dss.web.model.CounterSignatureForm;
 import eu.europa.esig.dss.web.model.ExtensionForm;
+import eu.europa.esig.dss.web.model.SignatureCBAdESForm;
 import eu.europa.esig.dss.web.model.SignatureDigestForm;
 import eu.europa.esig.dss.web.model.SignatureDocumentForm;
 import eu.europa.esig.dss.web.model.SignatureJAdESForm;
@@ -173,8 +178,27 @@ public class SigningService {
 		} catch (Exception e) {
 			throw new SignatureOperationException(e.getMessage(), e);
 		}
-	}    
-	
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ToBeSigned getDataToSign(SignatureCBAdESForm form) {
+		LOG.info("Start getDataToSign with one CB-AdES");
+
+		MultipleDocumentsSignatureService service = (MultipleDocumentsSignatureService)
+				getSignatureService(SignatureForm.CBAdES, form.isSignWithExpiredCertificate());
+		CBAdESSignatureParameters parameters = fillParameters(form);
+
+		try {
+			List<DSSDocument> toSignDocuments = WebAppUtils.toDSSDocuments(form.getDocumentsToSign());
+			ToBeSigned toBeSigned = service.getDataToSign(toSignDocuments, parameters);
+
+			LOG.info("End getDataToSign with one CB-AdES");
+			return toBeSigned;
+		} catch (Exception e) {
+			throw new SignatureOperationException(e.getMessage(), e);
+		}
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
     public ToBeSigned getDataToCounterSign(CounterSignatureForm form) {
         LOG.info("Start getDataToCounterSign");
@@ -272,6 +296,25 @@ public class SigningService {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public TimestampToken getContentTimestamp(SignatureCBAdESForm form) {
+		LOG.info("Start getContentTimestamp with CB-AdES");
+
+		MultipleDocumentsSignatureService service = (MultipleDocumentsSignatureService) getSignatureService(SignatureForm.CBAdES);
+		CBAdESSignatureParameters parameters = fillParameters(form);
+
+		try {
+			List<DSSDocument> toSignDocuments = WebAppUtils.toDSSDocuments(form.getDocumentsToSign());
+			TimestampToken contentTimestamp = service.getContentTimestamp(toSignDocuments, parameters);
+
+			LOG.info("End getContentTimestamp with CB-AdES");
+			return contentTimestamp;
+
+		} catch (Exception e) {
+			throw new SignatureOperationException(e.getMessage(), e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DSSDocument timestamp(TimestampForm form) {
 		List<DSSDocument> dssDocuments = WebAppUtils.toDSSDocuments(form.getOriginalFiles());
 		LOG.info("Start timestamp with {} document(s)", dssDocuments.size());
@@ -334,6 +377,21 @@ public class SigningService {
 
 		fillParameters(parameters, form);
 		
+		return parameters;
+	}
+
+	private CBAdESSignatureParameters fillParameters(SignatureCBAdESForm form) {
+		CBAdESSignatureParameters parameters = new CBAdESSignatureParameters();
+		parameters.setSignaturePackaging(form.getSignaturePackaging());
+		parameters.setCoseStructureType(form.getCoseStructureType());
+		parameters.setTagged(form.isTagged());
+		parameters.setSigDMechanism(form.getSigDMechanism());
+		if (form.getExternallySuppliedData() != null) {
+			parameters.setExternallySuppliedData(WebAppUtils.toDSSDocument(form.getExternallySuppliedData()));
+		}
+
+		fillParameters(parameters, form);
+
 		return parameters;
 	}
 	
@@ -471,6 +529,27 @@ public class SigningService {
 			throw new SignatureOperationException(e.getMessage(), e);
 		}
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DSSDocument signDocument(SignatureCBAdESForm form) {
+		LOG.info("Start signDocument with CB-AdES");
+
+		MultipleDocumentsSignatureService service = (MultipleDocumentsSignatureService)
+				getSignatureService(SignatureForm.CBAdES, form.isSignWithExpiredCertificate());
+		CBAdESSignatureParameters parameters = fillParameters(form);
+
+		try {
+			List<DSSDocument> toSignDocuments = WebAppUtils.toDSSDocuments(form.getDocumentsToSign());
+			SignatureAlgorithm sigAlgorithm = SignatureAlgorithm.getAlgorithm(form.getEncryptionAlgorithm(), form.getDigestAlgorithm());
+			SignatureValue signatureValue = new SignatureValue(sigAlgorithm, form.getSignatureValue());
+			DSSDocument signedDocument = service.signDocument(toSignDocuments, parameters, signatureValue);
+
+			LOG.info("End signDocument with CB-AdES");
+			return signedDocument;
+		} catch (Exception e) {
+			throw new SignatureOperationException(e.getMessage(), e);
+		}
+	}
 	
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public DSSDocument counterSignSignature(CounterSignatureForm form) {
@@ -532,6 +611,9 @@ public class SigningService {
 				case JAdES:
 					service = new JAdESService(cv);
 					break;
+				case CBAdES:
+					service = new CBAdESService(cv);
+					break;
 				default:
 					throw new IllegalArgumentException(String.format("Unknown signature form : %s", signatureForm));
 			}
@@ -560,6 +642,9 @@ public class SigningService {
             case JAdES:
                 service = new JAdESService(cv);
                 break;
+			case CBAdES:
+				service = new CBAdESService(cv);
+				break;
             default:
                 throw new IllegalArgumentException(String.format("Not supported signature form for a counter signature : %s", signatureForm));
             }
@@ -594,6 +679,11 @@ public class SigningService {
 	            jadesParameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH); // to use by default
 				parameters = jadesParameters;
 				break;
+			case CBAdES:
+				CBAdESSignatureParameters cbadesParameters = new CBAdESSignatureParameters();
+				cbadesParameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH); // to use by default
+				parameters = cbadesParameters;
+				break;
 			default:
 				throw new IllegalArgumentException(String.format("Unknown signature form : %s", signatureForm));
 			}
@@ -615,6 +705,9 @@ public class SigningService {
 	            jadesCounterSignatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
 	            parameters = jadesCounterSignatureParameters;
                 break;
+			case CBAdES:
+				parameters = new CBAdESCounterSignatureParameters();
+				break;
             default:
 				throw new IllegalArgumentException(String.format("Not supported signature form for a counter signature : %s", signatureForm));
         }
@@ -636,6 +729,9 @@ public class SigningService {
 					break;
 				case JAdES:
 					parameters = new JAdESTimestampParameters();
+					break;
+				case CBAdES:
+					parameters = new CBAdESTimestampParameters();
 					break;
 				default:
 					throw new IllegalArgumentException(String.format("Not supported signature form for a time-stamp : %s", signatureForm));

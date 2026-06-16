@@ -42,6 +42,8 @@ public class DataController {
 		if (signatureForm != null) {
 			switch (signatureForm) {
 				case CAdES:
+				case JAdES:
+				case CBAdES:
 					packagings.add(SignaturePackaging.ENVELOPING);
 					packagings.add(SignaturePackaging.DETACHED);
 					break;
@@ -54,9 +56,6 @@ public class DataController {
 					packagings.add(SignaturePackaging.DETACHED);
 					packagings.add(SignaturePackaging.INTERNALLY_DETACHED);
 					break;
-				case JAdES:
-					packagings.add(SignaturePackaging.ENVELOPING);
-					packagings.add(SignaturePackaging.DETACHED);
 				default:
 					break;
 			}
@@ -115,6 +114,18 @@ public class DataController {
 						levels.add(SignatureLevel.JAdES_BASELINE_LT);
 						if (!ProcessEnum.DIGEST_SIGN.equals(process)) {
 							levels.add(SignatureLevel.JAdES_BASELINE_LTA);
+						}
+					}
+					break;
+				case CBAdES:
+					if (process.isSign()) {
+						levels.add(SignatureLevel.CB_AdES_BASELINE_B);
+					}
+					levels.add(SignatureLevel.CB_AdES_BASELINE_T);
+					if (!serverSignSelfSigned || !process.isServerSign()) {
+						levels.add(SignatureLevel.CB_AdES_BASELINE_LT);
+						if (!ProcessEnum.DIGEST_SIGN.equals(process)) {
+							levels.add(SignatureLevel.CB_AdES_BASELINE_LTA);
 						}
 					}
 					break;

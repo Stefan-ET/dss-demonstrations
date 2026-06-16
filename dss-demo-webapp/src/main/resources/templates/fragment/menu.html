@@ -7,6 +7,7 @@
             <a th:with="label=#{label.signADigest}" th:href="@{/sign-a-digest}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signAPDF}" th:href="@{/sign-a-pdf}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signWithJAdES}" th:href="@{/sign-with-jades}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
+            <a th:with="label=#{label.signWithCBAdES}" th:href="@{/sign-with-cb-ades}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signMultipleDocuments}" th:href="@{/sign-multiple-documents}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.counterSignature}" th:href="@{/counter-sign}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.standalone.application}" th:href="@{/signature-standalone}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>

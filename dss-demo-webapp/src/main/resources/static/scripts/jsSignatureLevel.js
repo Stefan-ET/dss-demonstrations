@@ -19,6 +19,7 @@ function updateSignatureForm(asicValue) {
         $("#formPAdES").attr("disabled", false);
         $("#formXAdES").attr("disabled", false);
         $("#formJAdES").attr("disabled", false);
+        $("#formCBAdES").attr("disabled", false);
 
     } else {
         $("#formCAdES").attr("disabled", false);
