@@ -42,9 +42,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.2</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
         </dependency>
 
         <!-- Downgrading groovy version, see the following issue for more details : https://github.com/spring-projects/spring-boot/issues/49277 -->
