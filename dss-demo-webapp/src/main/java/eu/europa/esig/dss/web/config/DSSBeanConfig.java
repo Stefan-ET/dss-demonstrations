@@ -5,6 +5,8 @@ import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
+import eu.europa.esig.dss.eaa.jwt.creation.SDJWTEAAService;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
 import eu.europa.esig.dss.eaa.revocation.source.OnlineEAARevocationSource;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSException;
@@ -49,6 +51,8 @@ import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.ws.cert.validation.common.RemoteCertificateValidationService;
+import eu.europa.esig.dss.ws.eaa.creation.common.RemoteEAACreationService;
+import eu.europa.esig.dss.ws.eaa.creation.common.RemoteEAACreationServiceImpl;
 import eu.europa.esig.dss.ws.eaa.validation.common.RemoteEAAValidationService;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnection;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnectionImpl;
@@ -491,6 +495,16 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
+	public SDJWTEAAService sdjwtService() {
+		return new SDJWTEAAService(certificateVerifier());
+	}
+
+	@Bean
+	public MdocEAAService mdocService() {
+		return new MdocEAAService(certificateVerifier());
+	}
+
+	@Bean
 	public RemoteDocumentSignatureServiceImpl remoteSignatureService() {
 		RemoteDocumentSignatureServiceImpl service = new RemoteDocumentSignatureServiceImpl();
 		service.setAsicWithCAdESService(asicWithCadesService());
@@ -599,7 +613,15 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
-	public RemoteEAAValidationService eaaValidationService() throws IOException {
+	public RemoteEAACreationService eaaCreationService() {
+		RemoteEAACreationServiceImpl eaaCreationService = new RemoteEAACreationServiceImpl();
+		eaaCreationService.setSdjwtService(sdjwtService());
+		eaaCreationService.setMdocService(mdocService());
+		return eaaCreationService;
+	}
+
+	@Bean
+	public RemoteEAAValidationService eaaValidationService() {
 		RemoteEAAValidationService eaaValidationService = new RemoteEAAValidationService();
 		eaaValidationService.setVerifier(certificateVerifier());
 		eaaValidationService.setEAARevocationSource(eaaRevocationSource());

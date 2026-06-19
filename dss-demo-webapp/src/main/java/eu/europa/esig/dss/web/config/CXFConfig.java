@@ -11,6 +11,11 @@ import eu.europa.esig.dss.ws.cert.validation.common.RemoteCertificateValidationS
 import eu.europa.esig.dss.ws.cert.validation.rest.RestCertificateValidationServiceImpl;
 import eu.europa.esig.dss.ws.cert.validation.rest.client.RestCertificateValidationService;
 import eu.europa.esig.dss.ws.cert.validation.soap.SoapCertificateValidationServiceImpl;
+import eu.europa.esig.dss.ws.eaa.creation.common.RemoteEAACreationService;
+import eu.europa.esig.dss.ws.eaa.creation.rest.RestEAACreationServiceImpl;
+import eu.europa.esig.dss.ws.eaa.creation.rest.client.RestEAACreationService;
+import eu.europa.esig.dss.ws.eaa.creation.soap.SoapEAACreationServiceImpl;
+import eu.europa.esig.dss.ws.eaa.creation.soap.client.SoapEAACreationService;
 import eu.europa.esig.dss.ws.eaa.validation.common.RemoteEAAValidationService;
 import eu.europa.esig.dss.ws.eaa.validation.rest.RestEAAValidationServiceImpl;
 import eu.europa.esig.dss.ws.eaa.validation.rest.client.RestEAAValidationService;
@@ -94,6 +99,7 @@ public class CXFConfig {
 	public static final String SOAP_CERTIFICATE_VALIDATION = "/soap/certificate-validation";
 	public static final String SOAP_SERVER_SIGNING = "/soap/server-signing";
 	public static final String SOAP_TIMESTAMP_SERVICE = "/soap/timestamp-service";
+	public static final String SOAP_EAA_CREATION = "/soap/eaa-creation";
 	public static final String SOAP_EAA_VALIDATION = "/soap/eaa-validation";
 
 	public static final String REST_SIGNATURE_ONE_DOCUMENT = "/rest/signature/one-document";
@@ -105,6 +111,7 @@ public class CXFConfig {
 	public static final String REST_CERTIFICATE_VALIDATION = "/rest/certificate-validation";
 	public static final String REST_SERVER_SIGNING = "/rest/server-signing";
 	public static final String REST_TIMESTAMP_SERVICE = "/rest/timestamp-service";
+	public static final String REST_EAA_CREATION = "/rest/eaa-creation";
 	public static final String REST_EAA_VALIDATION = "/rest/eaa-validation";
 
 	@Value("${cxf.debug:false}")
@@ -145,6 +152,9 @@ public class CXFConfig {
 
 	@Autowired
 	private RemoteTimestampService timestampService;
+
+	@Autowired
+	private RemoteEAACreationService eaaCreationService;
 
 	@Autowired
 	private RemoteEAAValidationService eaaValidationService;
@@ -236,6 +246,13 @@ public class CXFConfig {
 	}
 
 	@Bean
+	public SoapEAACreationService soapEAACreationService() {
+		SoapEAACreationServiceImpl soapEAACreationService = new SoapEAACreationServiceImpl();
+		soapEAACreationService.setService(eaaCreationService);
+		return soapEAACreationService;
+	}
+
+	@Bean
 	public SoapEAAValidationService soapEAAValidationService() {
 		SoapEAAValidationServiceImpl soapEAAValidationService = new SoapEAAValidationServiceImpl();
 		soapEAAValidationService.setValidationService(eaaValidationService);
@@ -315,6 +332,14 @@ public class CXFConfig {
 	public Endpoint createSoapRemoteTimestampEndpoint() {
 		EndpointImpl endpoint = new EndpointImpl(cxf, soapTimestampService());
 		endpoint.publish(SOAP_TIMESTAMP_SERVICE);
+		enableMTOM(endpoint);
+		return endpoint;
+	}
+
+	@Bean
+	public Endpoint createSoapRemoteEAACreationEndpoint() {
+		EndpointImpl endpoint = new EndpointImpl(cxf, soapEAACreationService());
+		endpoint.publish(SOAP_EAA_CREATION);
 		enableMTOM(endpoint);
 		return endpoint;
 	}
@@ -401,6 +426,13 @@ public class CXFConfig {
 		RestTimestampServiceImpl restTimestampService = new RestTimestampServiceImpl();
 		restTimestampService.setTimestampService(timestampService);
 		return restTimestampService;
+	}
+
+	@Bean
+	public RestEAACreationService restEAACreationService() {
+		RestEAACreationServiceImpl restEAACreationService = new RestEAACreationServiceImpl();
+		restEAACreationService.setService(eaaCreationService);
+		return restEAACreationService;
 	}
 
 	@Bean
@@ -506,6 +538,17 @@ public class CXFConfig {
 		sfb.setProvider(jacksonJsonProvider());
 		sfb.setProvider(exceptionRestMapper());
 		sfb.setFeatures(createFeatures(RestExternalCMSService.class.getName()));
+		return sfb.create();
+	}
+
+	@Bean
+	public Server createEAACreationRestService() {
+		JAXRSServerFactoryBean sfb = new JAXRSServerFactoryBean();
+		sfb.setServiceBean(restEAACreationService());
+		sfb.setAddress(REST_EAA_CREATION);
+		sfb.setProvider(jacksonJsonProvider());
+		sfb.setProvider(exceptionRestMapper());
+		sfb.setFeatures(createFeatures(RestEAACreationService.class.getName()));
 		return sfb.create();
 	}
 
