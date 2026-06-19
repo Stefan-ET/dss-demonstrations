@@ -109,6 +109,9 @@ public class DSSBeanConfig {
 	@Value("${default.qwac.validation.policy}")
 	private String defaultQWACValidationPolicy;
 
+	@Value("${default.eaa.validation.policy}")
+	private String defaultEAAValidationPolicy;
+
 	@Value("${current.lotl.url}")
 	private String lotlUrl;
 
@@ -443,6 +446,11 @@ public class DSSBeanConfig {
 	@Bean
 	public ClassPathResource defaultQwacPolicy() {
 		return new ClassPathResource(defaultQWACValidationPolicy);
+	}
+
+	@Bean
+	public ClassPathResource defaultEAAPolicy() {
+		return new ClassPathResource(defaultEAAValidationPolicy);
 	}
 
 	@Bean

@@ -1,16 +1,48 @@
 package eu.europa.esig.dss.web.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
+import eu.europa.esig.dss.diagnostic.CertificateWrapper;
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
+import eu.europa.esig.dss.diagnostic.RevocationWrapper;
+import eu.europa.esig.dss.diagnostic.TimestampWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
+import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
+import eu.europa.esig.dss.eaa.mdoc.validation.AbstractMdocEAAPresentationValidator;
+import eu.europa.esig.dss.eaa.mdoc.validation.MdocValidationParameters;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+import eu.europa.esig.dss.enumerations.RevocationType;
+import eu.europa.esig.dss.enumerations.TimestampType;
+import eu.europa.esig.dss.enumerations.TokenExtractionStrategy;
+import eu.europa.esig.dss.enumerations.ValidationLevel;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.identifier.OriginalIdentifierProvider;
+import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
+import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.CertificateVerifierBuilder;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.DocumentValidator;
+import eu.europa.esig.dss.validation.identifier.UserFriendlyIdentifierProvider;
+import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
+import eu.europa.esig.dss.validation.reports.Reports;
+import eu.europa.esig.dss.web.WebAppUtils;
+import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.exception.InternalServerException;
+import eu.europa.esig.dss.web.exception.SourceNotFoundException;
+import eu.europa.esig.dss.web.model.EAAValidationForm;
+import eu.europa.esig.dss.web.service.FOPService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,51 +62,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
-import eu.europa.esig.dss.diagnostic.RevocationWrapper;
-import eu.europa.esig.dss.diagnostic.TimestampWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
-import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
-import eu.europa.esig.dss.eaa.mdoc.validation.AbstractMdocEAAPresentationAnalyzer;
-import eu.europa.esig.dss.eaa.mdoc.validation.AbstractMdocEAAPresentationValidator;
-import eu.europa.esig.dss.eaa.mdoc.validation.MdocDeviceResponseEAAPresentationValidator;
-import eu.europa.esig.dss.eaa.mdoc.validation.MdocValidationParameters;
-import eu.europa.esig.dss.eaa.revocation.source.OnlineEAARevocationSource;
-import eu.europa.esig.dss.enumerations.MimeTypeEnum;
-import eu.europa.esig.dss.enumerations.RevocationType;
-import eu.europa.esig.dss.enumerations.TimestampType;
-import eu.europa.esig.dss.enumerations.TokenExtractionStrategy;
-import eu.europa.esig.dss.enumerations.ValidationLevel;
-import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.identifier.OriginalIdentifierProvider;
-import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
-import eu.europa.esig.dss.model.policy.ValidationPolicy;
-import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
-import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
-import eu.europa.esig.dss.spi.validation.CertificateVerifier;
-import eu.europa.esig.dss.spi.validation.CertificateVerifierBuilder;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
-import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.validation.DocumentValidator;
-import eu.europa.esig.dss.validation.identifier.UserFriendlyIdentifierProvider;
-import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
-import eu.europa.esig.dss.validation.reports.Reports;
-import eu.europa.esig.dss.web.WebAppUtils;
-import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
-import eu.europa.esig.dss.web.exception.InternalServerException;
-import eu.europa.esig.dss.web.exception.SourceNotFoundException;
-import eu.europa.esig.dss.web.model.EAAValidationForm;
-import eu.europa.esig.dss.web.model.ValidationForm;
-import eu.europa.esig.dss.web.service.FOPService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping(value = "/eaa-validation")
@@ -90,20 +84,17 @@ public class EAAValidationController extends AbstractValidationController {
 			"adjunctCertificates", "includeCertificateTokens", "includeTimestampTokens", "includeRevocationTokens",
 			"includeUserFriendlyIdentifiers", "includeSemantics" };
 
-	private final FOPService fopService;
-    private final SignaturePolicyProvider signaturePolicyProvider;
-    private final Resource defaultPolicy;
-    private final EAARevocationSource eaaRevocationSource;
+    @Autowired
+    private FOPService fopService;
 
-    public EAAValidationController(final FOPService fopService,
-                                   final SignaturePolicyProvider signaturePolicyProvider,
-                                   @Qualifier("defaultPolicy") final Resource defaultPolicy,
-                                   final EAARevocationSource eaaRevocationSource) {
-        this.fopService = fopService;
-        this.signaturePolicyProvider = signaturePolicyProvider;
-        this.defaultPolicy = defaultPolicy;
-        this.eaaRevocationSource = eaaRevocationSource;
-    }
+    @Autowired
+    private SignaturePolicyProvider signaturePolicyProvider;
+
+    @Autowired
+    private EAARevocationSource eaaRevocationSource;
+
+    @Autowired
+    private Resource defaultEAAPolicy;
 
     @Override
     @InitBinder
@@ -216,8 +207,8 @@ public class EAAValidationController extends AbstractValidationController {
             } catch (IOException e) {
                 throw new DSSException("Unable to load validation policy!", e);
             }
-        } else if (defaultPolicy != null) {
-            try (InputStream is = defaultPolicy.getInputStream()) {
+        } else if (defaultEAAPolicy != null) {
+            try (InputStream is = defaultEAAPolicy.getInputStream()) {
                 validationPolicyLoader = ValidationPolicyLoader.fromValidationPolicy(is);
             } catch (IOException e) {
                 throw new InternalServerException(String.format("Unable to parse policy: %s", e.getMessage()), e);

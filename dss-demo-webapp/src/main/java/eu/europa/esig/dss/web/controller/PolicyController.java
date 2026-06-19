@@ -31,6 +31,9 @@ public class PolicyController {
     @Autowired
     private Resource defaultQwacPolicy;
 
+    @Autowired
+    private Resource defaultEAAPolicy;
+
     @Autowired(required = false)
     private Resource cryptographicSuiteXml;
 
@@ -67,6 +70,17 @@ public class PolicyController {
             Utils.copy(is, os);
         } catch (IOException e) {
             LOG.error("An error occurred while downloading a QWAC validation policy : {}", e.getMessage(), e);
+        }
+    }
+
+    @RequestMapping(value = "/download-eaa-default-policy")
+    public void downloadEAAPolicy(HttpSession session, HttpServletResponse response) {
+        response.setContentType(MimeTypeEnum.XML.getMimeTypeString());
+        response.setHeader("Content-Disposition", "attachment; filename=" + defaultEAAPolicy.getFilename());
+        try (InputStream is = defaultEAAPolicy.getInputStream(); OutputStream os = response.getOutputStream()) {
+            Utils.copy(is, os);
+        } catch (IOException e) {
+            LOG.error("An error occurred while downloading a EAA validation policy : {}", e.getMessage(), e);
         }
     }
 
