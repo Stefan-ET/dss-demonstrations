@@ -239,12 +239,7 @@ public class ValidationController extends AbstractValidationController {
 			}
 		}
 
-		try {
-			reports = documentValidator.validateDocument(validationPolicyLoader.create());
-		} catch (Exception e) {
-            LOG.error("An error occurred during document validation : " + e.getMessage(), e);
-            throw e;
-		}
+        reports = documentValidator.validateDocument(validationPolicyLoader.create());
 
 		Date end = new Date();
 		long duration = end.getTime() - start.getTime();

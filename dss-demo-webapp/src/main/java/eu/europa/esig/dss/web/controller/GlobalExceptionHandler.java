@@ -85,11 +85,10 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler({UnsupportedOperationException.class, IllegalArgumentException.class, IllegalInputException.class})
 	public ModelAndView unsupportedOperationExceptionHandler(HttpServletRequest req, Exception e) {
-		String errorMessage = "An error occurred on URI call [{}] : {}";
 		if (LOG.isDebugEnabled()) {
-			LOG.warn(errorMessage, req.getRequestURI(), e.getMessage(), e);
+			LOG.error("An error occurred on URI call [{}] : {}", req.getRequestURI(), e.getMessage(), e);
 		} else {
-			LOG.warn(errorMessage, req.getRequestURI(), e.getMessage());
+			LOG.error("An error occurred on URI call [{}] : {}. More details are available in debug mode.", req.getRequestURI(), e.getMessage());
 		}
 		return getMAV(req, e, HttpStatus.BAD_REQUEST, DEFAULT_ERROR_VIEW);
 	}
