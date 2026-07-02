@@ -6,12 +6,11 @@ import eu.europa.esig.dss.spi.client.http.IgnoreDataLoader;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.KeyStoreCertificateSource;
-import eu.europa.esig.dss.tsl.cache.CacheCleaner;
 import eu.europa.esig.dss.tsl.function.OfficialJournalSchemeInformationURI;
 import eu.europa.esig.dss.tsl.job.TLValidationJob;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,6 @@ public class TLValidationJobExecutor {
 		job.setOnlineDataLoader(onlineLoader());
 		job.setOfflineDataLoader(offlineLoader());
 		job.setTrustedListCertificateSource(tslCertificateSource);
-		job.setSynchronizationStrategy(new AcceptAllStrategy());
 		job.setCacheCleaner(cacheCleaner());
 
 		LOTLSource europeanLOTL = europeanLOTL();
