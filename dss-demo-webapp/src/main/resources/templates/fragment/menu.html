@@ -7,13 +7,14 @@
             <a th:with="label=#{label.signADigest}" th:href="@{/sign-a-digest}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signAPDF}" th:href="@{/sign-a-pdf}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signWithJAdES}" th:href="@{/sign-with-jades}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
+            <a th:with="label=#{label.signWithCBAdES}" th:href="@{/sign-with-cb-ades}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.signMultipleDocuments}" th:href="@{/sign-multiple-documents}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.counterSignature}" th:href="@{/counter-sign}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.standalone.application}" th:href="@{/signature-standalone}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.rest.soap.services}" th:href="@{/signature-rest}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
         </div>
     </div>
-    
+
     <div class="card mt-3">
         <div class="card-header bg-primary">Server side</div>
         <div class="list-group list-group-flush">
@@ -22,6 +23,7 @@
             <a th:with="label=#{label.validate}" th:href="@{/validation}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.cert.validate}" th:href="@{/certificate-validation}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.qwac.validate}" th:href="@{/qwac-validation}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
+            <a th:with="label=#{label.eaa.validate}" th:href="@{/eaa-validation}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.replay.diag}" th:href="@{/replay-diagnostic-data}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
             <a th:with="label=#{label.merge.containers}" th:href="@{/merge-containers}" class="list-group-item" th:text="${label}" th:classappend="${currentPage == label} ? 'active'"></a>
         </div>

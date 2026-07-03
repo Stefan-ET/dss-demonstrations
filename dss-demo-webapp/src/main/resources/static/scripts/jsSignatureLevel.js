@@ -19,6 +19,7 @@ function updateSignatureForm(asicValue) {
         $("#formPAdES").attr("disabled", false);
         $("#formXAdES").attr("disabled", false);
         $("#formJAdES").attr("disabled", false);
+        $("#formCBAdES").attr("disabled", false);
 
     } else {
         $("#formCAdES").attr("disabled", false);
@@ -88,7 +89,7 @@ function updateSignatureLevel(signatureForm) {
             $.each(data, function(idx) {
                 $('#selectSignatureLevel').append($('<option>', {
                     value: data[idx],
-                    text: data[idx].replace(/_/g, "-")
+                    text: data[idx]
                 }));
             });
         }

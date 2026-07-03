@@ -4,6 +4,10 @@ import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
+import eu.europa.esig.dss.eaa.jwt.creation.SDJWTEAAService;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
+import eu.europa.esig.dss.eaa.revocation.source.OnlineEAARevocationSource;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
@@ -24,6 +28,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.service.x509.aia.JdbcCacheAIASource;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.spi.client.http.IgnoreDataLoader;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -46,6 +51,9 @@ import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.ws.cert.validation.common.RemoteCertificateValidationService;
+import eu.europa.esig.dss.ws.eaa.creation.common.RemoteEAACreationService;
+import eu.europa.esig.dss.ws.eaa.creation.common.RemoteEAACreationServiceImpl;
+import eu.europa.esig.dss.ws.eaa.validation.common.RemoteEAAValidationService;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnection;
 import eu.europa.esig.dss.ws.server.signing.common.RemoteSignatureTokenConnectionImpl;
 import eu.europa.esig.dss.ws.signature.common.RemoteDocumentSignatureServiceImpl;
@@ -100,6 +108,9 @@ public class DSSBeanConfig {
 
 	@Value("${default.qwac.validation.policy}")
 	private String defaultQWACValidationPolicy;
+
+	@Value("${default.eaa.validation.policy}")
+	private String defaultEAAValidationPolicy;
 
 	@Value("${current.lotl.url}")
 	private String lotlUrl;
@@ -243,6 +254,14 @@ public class DSSBeanConfig {
 		trustAllDataLoader.setTrustStrategy(TrustAllStrategy.INSTANCE);
 		return trustAllDataLoader;
     }
+
+	@Bean
+	public CommonsDataLoader trustAllNoRedirectsDataLoader() {
+		CommonsDataLoader trustAllDataLoader = configureCommonsDataLoader(new CommonsDataLoader());
+		trustAllDataLoader.setTrustStrategy(TrustAllStrategy.INSTANCE);
+		trustAllDataLoader.setRedirectsEnabled(false);
+		return trustAllDataLoader;
+	}
 
 	@Bean
 	public OCSPDataLoader ocspDataLoader() {
@@ -430,6 +449,11 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
+	public ClassPathResource defaultEAAPolicy() {
+		return new ClassPathResource(defaultEAAValidationPolicy);
+	}
+
+	@Bean
 	public CAdESService cadesService() {
 		CAdESService service = new CAdESService(certificateVerifier());
 		service.setTspSource(tspSource);
@@ -458,6 +482,13 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
+	public CBAdESService cbadesService() {
+		CBAdESService service = new CBAdESService(certificateVerifier());
+		service.setTspSource(tspSource);
+		return service;
+	}
+
+	@Bean
 	public ASiCWithCAdESService asicWithCadesService() {
 		ASiCWithCAdESService service = new ASiCWithCAdESService(certificateVerifier());
 		service.setTspSource(tspSource);
@@ -472,6 +503,16 @@ public class DSSBeanConfig {
 	}
 
 	@Bean
+	public SDJWTEAAService sdjwtService() {
+		return new SDJWTEAAService(certificateVerifier());
+	}
+
+	@Bean
+	public MdocEAAService mdocService() {
+		return new MdocEAAService(certificateVerifier());
+	}
+
+	@Bean
 	public RemoteDocumentSignatureServiceImpl remoteSignatureService() {
 		RemoteDocumentSignatureServiceImpl service = new RemoteDocumentSignatureServiceImpl();
 		service.setAsicWithCAdESService(asicWithCadesService());
@@ -480,6 +521,7 @@ public class DSSBeanConfig {
 		service.setXadesService(xadesService());
 		service.setPadesService(padesService());
 		service.setJadesService(jadesService());
+		service.setCbadesService(cbadesService());
 		return service;
 	}
 
@@ -490,6 +532,7 @@ public class DSSBeanConfig {
 		service.setAsicWithXAdESService(asicWithXadesService());
 		service.setXadesService(xadesService());
 		service.setJadesService(jadesService());
+		service.setCbadesService(cbadesService());
 		return service;
 	}
 
@@ -575,6 +618,27 @@ public class DSSBeanConfig {
 		RemoteTimestampService timestampService = new RemoteTimestampService();
 		timestampService.setTSPSource(tspSource);
 		return timestampService;
+	}
+
+	@Bean
+	public RemoteEAACreationService eaaCreationService() {
+		RemoteEAACreationServiceImpl eaaCreationService = new RemoteEAACreationServiceImpl();
+		eaaCreationService.setSdjwtService(sdjwtService());
+		eaaCreationService.setMdocService(mdocService());
+		return eaaCreationService;
+	}
+
+	@Bean
+	public RemoteEAAValidationService eaaValidationService() {
+		RemoteEAAValidationService eaaValidationService = new RemoteEAAValidationService();
+		eaaValidationService.setVerifier(certificateVerifier());
+		eaaValidationService.setEAARevocationSource(eaaRevocationSource());
+		return eaaValidationService;
+	}
+
+	@Bean
+	public EAARevocationSource eaaRevocationSource() {
+		return new OnlineEAARevocationSource(fileCacheDataLoader());
 	}
 
 	@Bean

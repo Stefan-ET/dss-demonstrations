@@ -15,6 +15,7 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.web.WebAppUtils;
 import eu.europa.esig.dss.web.editor.ASiCContainerTypePropertyEditor;
 import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.DataToSignParams;
 import eu.europa.esig.dss.web.model.GetDataToSignResponse;
 import eu.europa.esig.dss.web.model.SignDocumentResponse;
@@ -51,19 +52,19 @@ public class SignatureMultipleDocumentsController extends AbstractSignatureContr
 	private static final Logger LOG = LoggerFactory.getLogger(SignatureMultipleDocumentsController.class);
 
 	private static final String SIGNATURE_PARAMETERS = "signature-multiple-documents";
-	
-	private static final String[] ALLOWED_FIELDS = { "documentsToSign", "containerType", "signatureForm", 
+
+	private static final String[] ALLOWED_FIELDS = { "documentsToSign", "containerType", "signatureForm",
 			"signatureLevel", "digestAlgorithm", "signWithExpiredCertificate", "addContentTimestamp" };
 
 	@InitBinder
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.registerCustomEditor(SignatureForm.class, new EnumPropertyEditor(SignatureForm.class));
 		webDataBinder.registerCustomEditor(ASiCContainerType.class, new ASiCContainerTypePropertyEditor());
-		webDataBinder.registerCustomEditor(SignatureLevel.class, new EnumPropertyEditor(SignatureLevel.class));
+		webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 		webDataBinder.registerCustomEditor(DigestAlgorithm.class, new EnumPropertyEditor(DigestAlgorithm.class));
 		webDataBinder.registerCustomEditor(EncryptionAlgorithm.class, new EnumPropertyEditor(EncryptionAlgorithm.class));
 	}
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);

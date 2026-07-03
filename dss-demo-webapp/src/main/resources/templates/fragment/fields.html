@@ -328,6 +328,47 @@
 
 <!-- END JAdES specific -->
 
+<!-- CB-AdES specific -->
+
+<div class="form-group row" th:fragment="field-cose-structure-type">
+	<label class="col-sm-3 col-form-label" for="coseStructureType" th:text="#{label.signature.cose.structure.type}"></label>
+	<div class="col-sm-5">
+		<th:block th:each="structureType : ${coseStructureType}">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="radio" th:field="*{coseStructureType}"
+					   th:value="${structureType}" th:id="structure+${structureType}" />
+				<label class="form-check-label" th:for="structure+${structureType}" th:text="#{${'label.'+structureType}}"></label>
+			</div>
+		</th:block>
+	</div>
+	<div class="col-xs-3 col-md-offset-1">
+		<p th:if="${#fields.hasErrors('coseStructureType')}" th:errors="*{coseStructureType}" class="text-danger">Error</p>
+	</div>
+</div>
+
+<div class="form-group row" id="cose-tagged" th:fragment="field-cose-tagged">
+	<label class="col-sm-3 col-form-label" for="tagged" th:text="#{label.signature.cose.tagged}"></label>
+	<div class="col-sm-5">
+		<div class="form-check">
+			<input class="form-check-input position-static" type="checkbox" name="tagged"
+				   th:aria-label="#{label.signature.cose.tagged}" checked />
+			<i class="fa fa-info-circle text-info ml-2" data-toggle="tooltip"
+			   data-placement="top" th:title="#{label.signature.cose.tagged.tooltip}"></i>
+		</div>
+	</div>
+</div>
+
+<div class="form-group row" th:fragment="field-externally-supplied-data">
+	<label class="col-sm-3 col-form-label" for="externallySuppliedData" th:text="#{label.signature.cose.externally.supplied.data}"></label>
+	<div class="col-sm-5">
+		<input type="file" class="form-control-file" name="externallySuppliedData" />
+		<i class="fa fa-info-circle text-info ml-2" data-toggle="tooltip"
+		   data-placement="top" th:title="#{label.signature.cose.externally.supplied.data.tooltip}"></i>
+	</div>
+</div>
+
+<!-- END CB-AdES specific -->
+
 <div class="form-group row" id="sign-expired-block" th:fragment="field-sign-expired">
 	<label class="col-sm-3 col-form-label" for="signWithExpiredCertificate" th:text="#{label.allow.expired.certificate}">Accept expired certificate</label>
 	<div class="col-sm-5">
@@ -382,6 +423,27 @@
 	<div class="col-sm-9 offset-sm-3 align-self-center">
 		<p th:if="${#fields.hasErrors('certificateChainFiles')}" th:errors="*{certificateChainFiles}" class="text-danger">Error</p>
 	</div>
+</div>
+
+<div class="certificate-form-file form-group row" th:fragment="field-eaa-file">
+    <label class="col-sm-3 col-form-label" for="eaaFile" th:text="#{label.eaa.file}"></label>
+    <div class="col-sm-6">
+        <input type="file" class="form-control-file" id="eaaFile" name="eaaFile" accept=".json,.cbor" />
+        <i class="fa fa-info-circle text-info ml-2" data-toggle="tooltip"
+           data-placement="top" th:title="#{label.eaa.file.tooltip}"></i>
+    </div>
+    <div class="col-sm-9 offset-sm-3 align-self-center">
+        <p th:if="${#fields.hasErrors('eaaFormValid')}" th:errors="*{eaaFormValid}" class="text-danger">Error</p>
+    </div>
+</div>
+
+<div class="certificate-form-file form-group row" th:fragment="field-session-transcript-file">
+    <label class="col-sm-3 col-form-label" for="sessionTranscript" th:text="#{label.session.transcript.file}"></label>
+    <div class="col-sm-6">
+        <input type="file" class="form-control-file" id="sessionTranscript" name="sessionTranscript" accept=".cbor" />
+        <i class="fa fa-info-circle text-info ml-2" data-toggle="tooltip"
+           data-placement="top" th:title="#{label.session.transcript.tooltip}"></i>
+    </div>
 </div>
 
 <div class="form-group row" th:fragment="field-validation-time">

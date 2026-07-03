@@ -6,7 +6,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-demos</artifactId>
-        <version>6.4</version>
+        <version>6.5.RC1</version>
     </parent>
 
     <artifactId>dss-demo-webapp</artifactId>
@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -42,9 +42,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.16</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+        </dependency>
+
+        <!-- Downgrading groovy version, see the following issue for more details : https://github.com/spring-projects/spring-boot/issues/49277 -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>5.0.3</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- DSS Core dependencies -->
@@ -108,6 +115,14 @@
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-timestamp-remote-soap</artifactId>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-creation-soap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-validation-soap</artifactId>
+        </dependency>
 
         <!-- Choose your CMS implementation -->
         <dependency>
@@ -137,6 +152,15 @@
 
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-asic-xades</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-asic-cades</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-signature-rest</artifactId>
             <exclusions>
                 <exclusion>
@@ -163,6 +187,15 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-creation-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-validation-rest</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-token</artifactId>
         </dependency>
         <dependency>
@@ -172,6 +205,23 @@
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-evidence-record-asn1</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-mdoc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-revocation-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-revocation-cwt</artifactId>
         </dependency>
 
         <!-- Validation policy support -->
@@ -328,7 +378,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.11</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -462,7 +511,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>3.5.5</version>
+                        <version>3.5.6</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -537,3 +586,4 @@
     </profiles>
 
 </project>
+

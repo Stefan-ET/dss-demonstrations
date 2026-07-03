@@ -5,6 +5,7 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.ProcessEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -27,10 +28,11 @@ public class DataController {
 
 	@Value("${dss.server.signing.keystore.self.signed}")
 	private boolean serverSignSelfSigned;
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);
+        webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 	}
 
 	@RequestMapping(value = "/packagingsByForm", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,6 +42,8 @@ public class DataController {
 		if (signatureForm != null) {
 			switch (signatureForm) {
 				case CAdES:
+				case JAdES:
+				case CBAdES:
 					packagings.add(SignaturePackaging.ENVELOPING);
 					packagings.add(SignaturePackaging.DETACHED);
 					break;
@@ -52,9 +56,6 @@ public class DataController {
 					packagings.add(SignaturePackaging.DETACHED);
 					packagings.add(SignaturePackaging.INTERNALLY_DETACHED);
 					break;
-				case JAdES:
-					packagings.add(SignaturePackaging.ENVELOPING);
-					packagings.add(SignaturePackaging.DETACHED);
 				default:
 					break;
 			}
@@ -116,6 +117,18 @@ public class DataController {
 						}
 					}
 					break;
+				case CBAdES:
+					if (process.isSign()) {
+						levels.add(SignatureLevel.CB_AdES_BASELINE_B);
+					}
+					levels.add(SignatureLevel.CB_AdES_BASELINE_T);
+					if (!serverSignSelfSigned || !process.isServerSign()) {
+						levels.add(SignatureLevel.CB_AdES_BASELINE_LT);
+						if (!ProcessEnum.DIGEST_SIGN.equals(process)) {
+							levels.add(SignatureLevel.CB_AdES_BASELINE_LTA);
+						}
+					}
+					break;
 				default:
 					break;
 			}
@@ -158,5 +171,5 @@ public class DataController {
 		}
 		return levels;
 	}
-	
+
 }

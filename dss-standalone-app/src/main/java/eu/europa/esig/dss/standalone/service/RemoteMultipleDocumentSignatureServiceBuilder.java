@@ -2,6 +2,7 @@ package eu.europa.esig.dss.standalone.service;
 
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.ws.signature.common.RemoteMultipleDocumentsSignatureServiceImpl;
 import eu.europa.esig.dss.xades.signature.XAdESService;
@@ -14,6 +15,7 @@ public class RemoteMultipleDocumentSignatureServiceBuilder extends AbstractDocum
         service.setAsicWithXAdESService(asicWithXadesService());
         service.setXadesService(xadesService());
         service.setJadesService(jadesService());
+        service.setCbadesService(cbadesService());
         return service;
     }
 
@@ -37,6 +39,12 @@ public class RemoteMultipleDocumentSignatureServiceBuilder extends AbstractDocum
 
     private JAdESService jadesService() {
         JAdESService service = new JAdESService(certificateVerifier());
+        service.setTspSource(tspSource());
+        return service;
+    }
+
+    private CBAdESService cbadesService() {
+        CBAdESService service = new CBAdESService(certificateVerifier());
         service.setTspSource(tspSource());
         return service;
     }

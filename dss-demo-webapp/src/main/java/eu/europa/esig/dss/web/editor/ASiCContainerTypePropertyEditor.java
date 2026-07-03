@@ -8,12 +8,12 @@ public class ASiCContainerTypePropertyEditor extends EnumPropertyEditor {
 	public ASiCContainerTypePropertyEditor() {
 		super(ASiCContainerType.class);
 	}
-	
+
 	@Override
 	public String getAsText() {
-		return getValue() == null ? Utils.EMPTY_STRING : ((ASiCContainerType) getValue()).toString();
+		return getValue() == null ? Utils.EMPTY_STRING : getValue().toString();
 	}
-	
+
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		try {

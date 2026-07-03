@@ -1,27 +1,24 @@
 package eu.europa.esig.dss.web.model;
 
-import eu.europa.esig.dss.enumerations.ValidationLevel;
-import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.web.validation.AssertMultipartFile;
-import jakarta.validation.constraints.AssertTrue;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Date;
 import java.util.List;
 
-public class ValidationForm {
+import org.springframework.web.multipart.MultipartFile;
+
+import eu.europa.esig.dss.web.validation.AssertMultipartFile;
+import jakarta.validation.constraints.AssertTrue;
+
+public class EAAValidationForm {
 
 	@AssertMultipartFile
-	private MultipartFile signedFile;
+	private MultipartFile eaaFile;
 
-	@AssertMultipartFile
-	private List<OriginalFile> originalFiles;
+    @AssertMultipartFile
+    private MultipartFile sessionTranscript;
 
 	private Date validationTime;
 
 	private int timezoneDifference;
-
-	private ValidationLevel validationLevel;
 
 	private boolean defaultPolicy;
 
@@ -30,46 +27,40 @@ public class ValidationForm {
 
 	@AssertMultipartFile
 	private MultipartFile cryptographicSuite;
-	
+
 	@AssertMultipartFile
 	private MultipartFile signingCertificate;
 
 	@AssertMultipartFile
 	private List<MultipartFile> adjunctCertificates;
 
-	@AssertMultipartFile
-	private List<MultipartFile> evidenceRecordFiles;
-
-	@AssertMultipartFile
-	private MultipartFile externallySuppliedData;
-	
 	private boolean includeCertificateTokens;
-	
+
 	private boolean includeRevocationTokens;
-	
+
 	private boolean includeTimestampTokens;
 
 	private boolean includeSemantics;
 
 	private boolean includeUserFriendlyIdentifiers = true;
 
-	public MultipartFile getSignedFile() {
-		return signedFile;
-	}
+    public MultipartFile getEaaFile() {
+        return eaaFile;
+    }
 
-	public void setSignedFile(MultipartFile signedFile) {
-		this.signedFile = signedFile;
-	}
+    public void setEaaFile(final MultipartFile eaaFile) {
+        this.eaaFile = eaaFile;
+    }
 
-	public List<OriginalFile> getOriginalFiles() {
-		return originalFiles;
-	}
+    public MultipartFile getSessionTranscript() {
+        return sessionTranscript;
+    }
 
-	public void setOriginalFiles(List<OriginalFile> originalFiles) {
-		this.originalFiles = originalFiles;
-	}
+    public void setSessionTranscript(final MultipartFile sessionTranscript) {
+        this.sessionTranscript = sessionTranscript;
+    }
 
-	public Date getValidationTime() {
+    public Date getValidationTime() {
 		return validationTime;
 	}
 
@@ -83,22 +74,6 @@ public class ValidationForm {
 
 	public void setTimezoneDifference(int timezoneDifference) {
 		this.timezoneDifference = timezoneDifference;
-	}
-
-	public List<MultipartFile> getEvidenceRecordFiles() {
-		return evidenceRecordFiles;
-	}
-
-	public void setEvidenceRecordFiles(List<MultipartFile> evidenceRecordFiles) {
-		this.evidenceRecordFiles = evidenceRecordFiles;
-	}
-
-	public ValidationLevel getValidationLevel() {
-		return validationLevel;
-	}
-
-	public void setValidationLevel(ValidationLevel validationLevel) {
-		this.validationLevel = validationLevel;
 	}
 
 	public boolean isDefaultPolicy() {
@@ -141,14 +116,6 @@ public class ValidationForm {
 		this.adjunctCertificates = adjunctCertificates;
 	}
 
-	public MultipartFile getExternallySuppliedData() {
-		return externallySuppliedData;
-	}
-
-	public void setExternallySuppliedData(MultipartFile externallySuppliedData) {
-		this.externallySuppliedData = externallySuppliedData;
-	}
-	
 	public boolean isIncludeCertificateTokens() {
 		return includeCertificateTokens;
 	}
@@ -189,24 +156,9 @@ public class ValidationForm {
 		this.includeUserFriendlyIdentifiers = includeUserFriendlyIdentifiers;
 	}
 
-	@AssertTrue(message = "{error.signed.file.mandatory}")
-	public boolean isSignedFile() {
-		return (signedFile != null) && (!signedFile.isEmpty());
-	}
-
-	@AssertTrue(message = "{error.original.file.empty}")
-	public boolean areOriginalFiles() {
-		if (Utils.isCollectionNotEmpty(originalFiles)) {
-			boolean atLeastOneOriginalDoc = false;
-			for (OriginalFile originalDocument : originalFiles) {
-				if (originalDocument.isNotEmpty()) {
-					atLeastOneOriginalDoc = true;
-					break;
-				}
-			}
-			return atLeastOneOriginalDoc;
-		}
-		return true;
-	}
+    @AssertTrue(message = "{error.eaa.file.mandatory}")
+    public boolean isEaaFormValid() {
+        return (eaaFile != null) && (!eaaFile.isEmpty());
+    }
 
 }

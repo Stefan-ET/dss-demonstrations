@@ -642,7 +642,6 @@
         <TLNotExpired Level="WARN" />
         <TLWellSigned Level="FAIL" />
         <TLVersion Level="FAIL">
-            <Id>5</Id>
             <Id>6</Id>
         </TLVersion>
         <TLStructure Level="WARN" />

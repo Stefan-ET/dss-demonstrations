@@ -12,6 +12,7 @@ import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.DataToSignParams;
 import eu.europa.esig.dss.web.model.GetDataToSignResponse;
 import eu.europa.esig.dss.web.model.SignDocumentResponse;
@@ -48,12 +49,13 @@ public class SignaturePdfController extends AbstractSignatureController {
 	private static final Logger LOG = LoggerFactory.getLogger(SignaturePdfController.class);
 
 	private static final String SIGNATURE_PDF_PARAMETERS = "signature-pdf";
-	
+
 	private static final String[] ALLOWED_FIELDS = { "documentToSign" };
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);
+        webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 	}
 
 	@RequestMapping(method = RequestMethod.GET)

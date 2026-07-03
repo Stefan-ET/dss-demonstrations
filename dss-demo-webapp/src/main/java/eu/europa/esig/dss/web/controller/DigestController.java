@@ -13,6 +13,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.web.WebAppUtils;
 import eu.europa.esig.dss.web.editor.EnumPropertyEditor;
+import eu.europa.esig.dss.web.editor.SignatureLevelPropertyEditor;
 import eu.europa.esig.dss.web.model.DataToSignParams;
 import eu.europa.esig.dss.web.model.GetDataToSignResponse;
 import eu.europa.esig.dss.web.model.SignDocumentResponse;
@@ -49,18 +50,18 @@ public class DigestController extends AbstractSignatureController {
 	private static final Logger LOG = LoggerFactory.getLogger(DigestController.class);
 
 	private static final String SIGN_DIGEST = "signature-digest";
-	
-	private static final String[] ALLOWED_FIELDS = { "signatureForm", "digestAlgorithm", "digestToSign", "documentName", "fileToCompute", 
+
+	private static final String[] ALLOWED_FIELDS = { "signatureForm", "digestAlgorithm", "digestToSign", "documentName", "fileToCompute",
 			"signatureLevel", "signWithExpiredCertificate", "addContentTimestamp" };
 
 	@InitBinder
 	public void initBinder(WebDataBinder webDataBinder) {
 		webDataBinder.registerCustomEditor(SignatureForm.class, new EnumPropertyEditor(SignatureForm.class));
-		webDataBinder.registerCustomEditor(SignatureLevel.class, new EnumPropertyEditor(SignatureLevel.class));
+		webDataBinder.registerCustomEditor(SignatureLevel.class, new SignatureLevelPropertyEditor());
 		webDataBinder.registerCustomEditor(DigestAlgorithm.class, new EnumPropertyEditor(DigestAlgorithm.class));
 		webDataBinder.registerCustomEditor(EncryptionAlgorithm.class, new EnumPropertyEditor(EncryptionAlgorithm.class));
 	}
-	
+
 	@InitBinder
 	public void setAllowedFields(WebDataBinder webDataBinder) {
 		webDataBinder.setAllowedFields(ALLOWED_FIELDS);
@@ -155,7 +156,7 @@ public class DigestController extends AbstractSignatureController {
 
 	@ModelAttribute("signatureForms")
 	public SignatureForm[] getSignatureForms() {
-		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.JAdES };
+		return new SignatureForm[] { SignatureForm.XAdES, SignatureForm.CAdES, SignatureForm.JAdES, SignatureForm.CBAdES };
 	}
 
 	@ModelAttribute("digestAlgos")

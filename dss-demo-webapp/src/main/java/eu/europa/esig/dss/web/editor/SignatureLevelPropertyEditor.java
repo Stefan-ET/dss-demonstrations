@@ -1,12 +1,12 @@
 package eu.europa.esig.dss.web.editor;
 
-import eu.europa.esig.dss.enumerations.SignatureProfile;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.utils.Utils;
 
-public class SignatureProfilePropertyEditor extends EnumPropertyEditor {
+public class SignatureLevelPropertyEditor extends EnumPropertyEditor {
 
-    public SignatureProfilePropertyEditor() {
-        super(SignatureProfile.class);
+    public SignatureLevelPropertyEditor() {
+        super(SignatureLevel.class);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class SignatureProfilePropertyEditor extends EnumPropertyEditor {
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         try {
-            setValue(SignatureProfile.valueByName(text));
+            setValue(SignatureLevel.valueByName(text));
         } catch (Exception e) {
             setValue(null);
         }

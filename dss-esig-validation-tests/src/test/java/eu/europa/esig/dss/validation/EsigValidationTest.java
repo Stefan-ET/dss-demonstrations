@@ -1,13 +1,12 @@
 package eu.europa.esig.dss.validation;
 
 import eu.europa.esig.dss.enumerations.MimeType;
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.policy.EtsiValidationPolicy;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
+import eu.europa.esig.dss.policy.EtsiValidationPolicy;
 import eu.europa.esig.dss.policy.ValidationPolicyFacade;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
@@ -17,6 +16,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.client.http.DataLoader;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
@@ -24,7 +24,6 @@ import eu.europa.esig.dss.spi.x509.KeyStoreCertificateSource;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
 import eu.europa.esig.dss.tsl.job.TLValidationJob;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.reports.Reports;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +97,8 @@ public class EsigValidationTest {
         sb.append("AdES Errors,");
         sb.append("AdES Warnings,");
         sb.append("Qualifications Errors,");
-        sb.append("Qualifications Warnings");
+        sb.append("Qualifications Warnings,");
+        sb.append("Error description");
         sb.append('\n');
     }
 
@@ -119,7 +119,6 @@ public class EsigValidationTest {
 
             TLValidationJob tlValidationJob = new TLValidationJob();
             tlValidationJob.setTrustedListCertificateSource(trustedCertSource);
-            tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy());
 
             LOTLSource lotlSource = new LOTLSource();
             lotlSource.setUrl(getLotlUrl(zipArchiveContent));
@@ -297,26 +296,39 @@ public class EsigValidationTest {
     @ParameterizedTest(name = "Validation {index} : {0}")
     @MethodSource("data")
     public void test(DSSDocument document, String expectedResult, CertificateVerifier certificateVerifier) {
-        SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(document);
-        validator.setCertificateVerifier(certificateVerifier);
+        String obtainedResult;
+        SimpleReport simpleReport = null;
+        String errorMessage = null;
+        try {
+            SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(document);
+            validator.setCertificateVerifier(certificateVerifier);
 
-        Reports reports = validator.validateDocument(validationPolicy);
-        // reports.print();
+            Reports reports = validator.validateDocument(validationPolicy);
+            // reports.print();
 
-        SimpleReport simpleReport = reports.getSimpleReport();
-        String obtainedResult = simpleReport.getSignatureQualification(simpleReport.getFirstSignatureId()).getReadable();
+            simpleReport = reports.getSimpleReport();
+            obtainedResult = simpleReport.getSignatureQualification(simpleReport.getFirstSignatureId()).getReadable();
+        } catch (Exception e) {
+            obtainedResult = e.getClass().getName();
+            errorMessage = e.getMessage();
+        }
 
         sb.append(document.getName()).append(",");
         sb.append(expectedResult).append(",");
         sb.append(obtainedResult).append(",");
         sb.append(expectedResult.equals(obtainedResult)).append(",");
-        sb.append(simpleReport.getIndication(simpleReport.getFirstSignatureId())).append(",");
-        sb.append((simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) != null ?
-                simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) : "-")).append(",");
-        sb.append(toString(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getQualificationErrors(simpleReport.getFirstSignatureId()))).append(",");
-        sb.append(toString(simpleReport.getQualificationWarnings(simpleReport.getFirstSignatureId())));
+        if (simpleReport != null) {
+            sb.append(simpleReport.getIndication(simpleReport.getFirstSignatureId())).append(",");
+            sb.append((simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) != null ?
+                    simpleReport.getSubIndication(simpleReport.getFirstSignatureId()) : "-")).append(",");
+            sb.append(toString(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getQualificationErrors(simpleReport.getFirstSignatureId()))).append(",");
+            sb.append(toString(simpleReport.getQualificationWarnings(simpleReport.getFirstSignatureId()))).append(",-");
+        } else {
+            sb.append("-,-,-,-,-,-,");
+            sb.append(errorMessage == null ? "-" : errorMessage.replace(",", ";"));
+        }
         sb.append('\n');
 
         // TODO: add equivalence map between eSig validation test cases and DSS results

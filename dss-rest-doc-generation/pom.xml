@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 		<artifactId>dss-demos</artifactId>
-		<version>6.4</version>
+		<version>6.5.RC1</version>
 	</parent>
 
 	<name>DSS REST Doc generation</name>
@@ -50,6 +50,16 @@
 		</dependency>
 		<dependency>
 			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+			<artifactId>dss-eaa-creation-rest-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+			<artifactId>dss-eaa-validation-rest-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 			<artifactId>dss-spi</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -73,7 +83,19 @@
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-restassured</artifactId>
-			<version>3.0.5</version>
+			<version>3.0.6</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Use legacy dependencies for Jackson 2 support. TODO : to be upgraded to Jackson 3 ? -->
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>4.0.32</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
