@@ -16,8 +16,8 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<jre.download.link>https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jre_x64_windows_hotspot_25.0.3_9.zip</jre.download.link>
-		<jre.root.folder>jdk-25.0.3+9-jre</jre.root.folder>
+		<jre.download.link>https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jre_x64_windows_hotspot_26.0.1_8.zip</jre.download.link>
+		<jre.root.folder>jdk-26.0.1+8-jre</jre.root.folder>
 		<tomcat.version>11.0.23</tomcat.version>
 		<tomcat.root.folder>apache-tomcat-${tomcat.version}</tomcat.root.folder>
 	</properties>
@@ -115,6 +115,13 @@
 			<properties>
 				<jre.download.link>https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jre_x64_windows_hotspot_21.0.11_10.zip</jre.download.link>
 				<jre.root.folder>jdk-21.0.11+10-jre</jre.root.folder>
+			</properties>
+		</profile>
+		<profile>
+			<id>java25</id>
+			<properties>
+				<jre.download.link>https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jre_x64_windows_hotspot_25.0.3_9.zip</jre.download.link>
+				<jre.root.folder>jdk-25.0.3+9-jre</jre.root.folder>
 			</properties>
 		</profile>
 	</profiles>
