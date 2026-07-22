@@ -8,7 +8,7 @@
     <baseDirectory></baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/java-mac/${jre.root.folder}</directory>
+            <directory>${project.build.directory}/java-mac/${jre.root.folder}/Contents/Home</directory>
             <fileMode>0755</fileMode>
             <outputDirectory>java</outputDirectory>
         </fileSet>
