@@ -23,6 +23,7 @@
 		<!-- Mac (Apple Silicon / arm64) -->
 		<jre.mac.download.link>https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jre_aarch64_mac_hotspot_26.0.1_8.tar.gz</jre.mac.download.link>
 		<fx.sdk.mac.download.link>https://download.java.net/java/GA/javafx26.0.2/9693849436684107a5d005509c8d97a4/3/openjfx-26.0.2_macos-aarch64_bin-sdk.tar.gz</fx.sdk.mac.download.link>
+		<fx.root.folder.mac>javafx-sdk-26.0.2</fx.root.folder.mac>
 	</properties>
 
 	<dependencies>
