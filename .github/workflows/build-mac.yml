@@ -1,0 +1,30 @@
+name: Build DSS Standalone for macOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build dss-standalone-app + package (mac profile)
+        run: |
+          mvn -q clean install -pl dss-standalone-app -am -DskipTests=true
+          mvn -q clean install -pl dss-standalone-app-package -am -DskipTests=true -P mac
+
+      - name: Upload mac package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dss-standalone-mac
+          path: |
+            dss-standalone-app-package/target/*mac*.tar.gz
