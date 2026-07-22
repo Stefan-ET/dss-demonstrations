@@ -19,6 +19,10 @@
 		<!-- Linux -->
 		<jre.linux.download.link>https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jre_x64_linux_hotspot_26.0.1_8.tar.gz</jre.linux.download.link>
 		<fx.sdk.linux.download.link>https://download.java.net/java/GA/javafx26.0.1/8e81b911af59415286d745a64d36b878/4/openjfx-26.0.1_linux-x64_bin-sdk.tar.gz</fx.sdk.linux.download.link>
+
+		<!-- Mac (Apple Silicon / arm64) -->
+		<jre.mac.download.link>https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26.0.1%2B8/OpenJDK26U-jre_aarch64_mac_hotspot_26.0.1_8.tar.gz</jre.mac.download.link>
+		<fx.sdk.mac.download.link>https://download.java.net/java/GA/javafx26.0.1/8e81b911af59415286d745a64d36b878/4/openjfx-26.0.1_osx-aarch64_bin-sdk.zip</fx.sdk.mac.download.link>
 	</properties>
 
 	<dependencies>
@@ -243,5 +247,65 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<!-- This profile allows to generate a package for macOS (Apple Silicon / arm64) -->
+			<id>mac</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<version>1.13.0</version>
+						<executions>
+							<execution>
+								<id>JRE_MAC</id>
+								<phase>validate</phase>
+								<goals><goal>wget</goal></goals>
+								<configuration>
+									<url>${jre.mac.download.link}</url>
+									<unpack>true</unpack>
+									<outputDirectory>${project.build.directory}/java-mac</outputDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>FX_MAC</id>
+								<phase>validate</phase>
+								<goals><goal>wget</goal></goals>
+								<configuration>
+									<url>${fx.sdk.mac.download.link}</url>
+									<unpack>true</unpack>
+									<outputDirectory>${project.build.directory}/fx-sdk-mac</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>mac-complete-tar</id>
+								<phase>package</phase>
+								<goals><goal>single</goal></goals>
+								<configuration>
+									<descriptors>
+										<descriptor>src/main/assembly/mac-complete-assembly.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+							<execution>
+								<id>mac-minimal-tar</id>
+								<phase>package</phase>
+								<goals><goal>single</goal></goals>
+								<configuration>
+									<descriptors>
+										<descriptor>src/main/assembly/mac-minimal-assembly.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>		
 	</profiles>
 </project>
