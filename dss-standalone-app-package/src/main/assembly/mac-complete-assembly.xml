@@ -13,7 +13,7 @@
             <outputDirectory>java</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.build.directory}/fx-sdk-mac/${fx.root.folder}</directory>
+            <directory>${project.build.directory}/fx-sdk-mac/${fx.root.folder.mac}</directory>
             <fileMode>0755</fileMode>
             <outputDirectory>fx-sdk</outputDirectory>
         </fileSet>
