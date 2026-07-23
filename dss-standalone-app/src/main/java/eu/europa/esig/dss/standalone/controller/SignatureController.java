@@ -324,7 +324,7 @@ public class SignatureController extends AbstractController {
 				switch (model.getTokenType()) {
 					case PKCS11:
 						fileChooser = DSSFileChooserLoader.getInstance().createFileChooser(
-								"Library", "PKCS11 library (*.dll, *.so)", "*.dll", "*.so");
+								"Library", "PKCS11 library (*.dll, *.so, *.dylib)", "*.dll", "*.so", "*.dylib");
 						break;
 					case PKCS12:
 						fileChooser = DSSFileChooserLoader.getInstance().createFileChooser(
