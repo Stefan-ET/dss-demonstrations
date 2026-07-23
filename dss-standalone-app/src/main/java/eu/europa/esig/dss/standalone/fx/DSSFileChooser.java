@@ -21,7 +21,11 @@ public class DSSFileChooser {
             this.fileChooser.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter(fileExtensionFilter, fileExtensions));
         }
-        this.fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*"));
+        // NOTE: pattern changed from "*" to "*.*" — bare "*" is not parsed correctly by
+        // JavaFX's native FileChooser on macOS (Glass toolkit), causing all files to
+        // appear disabled/greyed-out in the NSOpenPanel. "*.*" is the standard JavaFX
+        // idiom for "match all files" and works correctly across Windows/Linux/macOS.
+        this.fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
     }
 
     public void bindDirectoryProperty(SimpleObjectProperty<File> directoryProperty) {
@@ -44,5 +48,4 @@ public class DSSFileChooser {
         }
         return files;
     }
-
 }
